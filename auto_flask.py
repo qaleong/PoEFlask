@@ -39,6 +39,7 @@ def start_timer():
         (float(min_time_entry2.get()), float(max_time_entry2.get()), '2', flask2_var.get()),
         (float(min_time_entry3.get()), float(max_time_entry3.get()), '3', flask3_var.get()),
         (float(min_time_entry4.get()), float(max_time_entry4.get()), '4', flask4_var.get())
+        (float(min_time_entry5.get()), float(max_time_entry5.get()), '5', flask4_var.get())
     ]
 
     for min_time, max_time, button, enabled in time_ranges:
@@ -92,11 +93,13 @@ flask1_var = tk.IntVar(value=1)
 flask2_var = tk.IntVar(value=1)
 flask3_var = tk.IntVar(value=1)
 flask4_var = tk.IntVar(value=1)
+flask5_var = tk.IntVar(value=1)
 # Create input rows for each flask timer, initializing the values to "0"
 min_time_entry1, max_time_entry1 = create_timer_row(1, tk.StringVar(value='0'), tk.StringVar(value='0'), flask1_var)
 min_time_entry2, max_time_entry2 = create_timer_row(2, tk.StringVar(value='0'), tk.StringVar(value='0'), flask2_var)
 min_time_entry3, max_time_entry3 = create_timer_row(3, tk.StringVar(value='0'), tk.StringVar(value='0'), flask3_var)
 min_time_entry4, max_time_entry4 = create_timer_row(4, tk.StringVar(value='0'), tk.StringVar(value='0'), flask4_var)
+min_time_entry5, max_time_entry5 = create_timer_row(5, tk.StringVar(value='0'), tk.StringVar(value='0'), flask5_var)
 
 
 
