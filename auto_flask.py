@@ -5,15 +5,21 @@ import pygetwindow
 import threading
 
 import tkinter as tk
-from tkinter import ttk,messagebox
+from tkinter import messagebox
 
 def flask_1(time1,time2,button):
     global running
     if time1 > time2:
         messagebox.showerror("Error", "Max time must be greater than min time.")
+        stop_timer()
+        return
+    elif  time2 == 0:
+        messagebox.showerror("Error", "Cannot have a duration of zero")
+        stop_timer()
         return
     elif time1 < 0 or time2 <0:
         messagebox.showerror("Error", "Max time cannot be less than zero.")
+        stop_timer()
         return
     else:
         while running:
@@ -28,81 +34,71 @@ def start_timer():
     global running
     running = True  # Set the flag to True to start timers
     status_label.config(text="timer running")
-    min_time1 = float(min_time_entry1.get())
-    max_time1 = float(max_time_entry1.get())
-    min_time2 = float(min_time_entry2.get())
-    max_time2 = float(max_time_entry2.get())
-    min_time3 = float(min_time_entry3.get())
-    max_time3 = float(max_time_entry3.get())
-    min_time4 = float(min_time_entry4.get())
-    max_time4 = float(max_time_entry4.get())
+    time_ranges = [
+        (float(min_time_entry1.get()), float(max_time_entry1.get()), '1', flask1_var.get()),
+        (float(min_time_entry2.get()), float(max_time_entry2.get()), '2', flask2_var.get()),
+        (float(min_time_entry3.get()), float(max_time_entry3.get()), '3', flask3_var.get()),
+        (float(min_time_entry4.get()), float(max_time_entry4.get()), '4', flask4_var.get())
+    ]
 
-    t1 = threading.Thread(target=flask_1, args=(min_time1,max_time1,'1'))
-    t2 = threading.Thread(target=flask_1, args=(min_time2,max_time2,'2'))
-    t3 = threading.Thread(target=flask_1, args=(min_time3,max_time3,'3'))
-    t4 = threading.Thread(target=flask_1, args=(min_time4,max_time4,'4'))
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
+    for min_time, max_time, button, enabled in time_ranges:
+        if enabled:
+            threading.Thread(target=flask_1, args=(min_time, max_time, button)).start()
+
 
 def stop_timer():
     global running
     running = False  # Set the flag to False to stop timers
     status_label.config(text="Timers Stopped.")  # Update the status label
-        
+
+def create_timer_row(flask_num, min_time_var, max_time_var, check_var):
+    """Helper function to create a row in the GUI for a flask timer"""
+    min_time_label = tk.Label(frame, text=f"Flask {flask_num} Min Time (seconds):")
+    min_time_label.grid(row=flask_num, column=0, sticky="w", pady=2)
+
+    min_time_entry = tk.Entry(frame, textvariable=min_time_var, validate="key", validatecommand=Numeric_check)
+    min_time_entry.grid(row=flask_num, column=1, pady=2)
+
+    max_time_label = tk.Label(frame, text=f"Flask {flask_num} Max Time (seconds):")
+    max_time_label.grid(row=flask_num, column=2, sticky="w", pady=2)
+
+    max_time_entry = tk.Entry(frame, textvariable=max_time_var, validate="key", validatecommand=Numeric_check)
+    max_time_entry.grid(row=flask_num, column=3, pady=2)
+
+    flask_checkbox = tk.Checkbutton(frame, text="Enable", variable=check_var)
+    flask_checkbox.grid(row=flask_num, column=4, pady=2)
+
+    return min_time_entry, max_time_entry    
+
+def validate_numeric_input(P):
+    """Validation function to allow only numeric input (including decimal points)."""
+    if P == "":  # Allow backspace (empty string)
+        return True
+    try:
+        float(P)  # Try to convert to float
+        return True
+    except ValueError:
+        return False
 # Create the GUI
 root = tk.Tk()
 root.title("Auto Flask")
 
-# Create labels and input fields
-min_time_label1 = tk.Label(root, text="Enter minimum time for flask 1(seconds):")
-min_time_label1.pack()
+Numeric_check = (root.register(validate_numeric_input), "%P")
 
-min_time_entry1 = tk.Entry(root)
-min_time_entry1.pack()
+frame = tk.Frame(root)
+frame.pack(padx=20, pady=20)
 
-max_time_label1 = tk.Label(root, text="Enter maximum time for flask 1 (seconds):")
-max_time_label1.pack()
+flask1_var = tk.IntVar(value=1)
+flask2_var = tk.IntVar(value=1)
+flask3_var = tk.IntVar(value=1)
+flask4_var = tk.IntVar(value=1)
+# Create input rows for each flask timer, initializing the values to "0"
+min_time_entry1, max_time_entry1 = create_timer_row(1, tk.StringVar(value='0'), tk.StringVar(value='0'), flask1_var)
+min_time_entry2, max_time_entry2 = create_timer_row(2, tk.StringVar(value='0'), tk.StringVar(value='0'), flask2_var)
+min_time_entry3, max_time_entry3 = create_timer_row(3, tk.StringVar(value='0'), tk.StringVar(value='0'), flask3_var)
+min_time_entry4, max_time_entry4 = create_timer_row(4, tk.StringVar(value='0'), tk.StringVar(value='0'), flask4_var)
 
-max_time_entry1 = tk.Entry(root)
-max_time_entry1.pack()
 
-min_time_label2 = tk.Label(root, text="Enter minimum time for flask 2 (seconds):")
-min_time_label2.pack()
-
-min_time_entry2 = tk.Entry(root)
-min_time_entry2.pack()
-
-max_time_label2 = tk.Label(root, text="Enter maximum time for flask 2 (seconds):")
-max_time_label2.pack()
-
-max_time_entry2 = tk.Entry(root)
-max_time_entry2.pack()
-
-min_time_label3 = tk.Label(root, text="Enter minimum time for flask 3 (seconds):")
-min_time_label3.pack()
-
-min_time_entry3 = tk.Entry(root)
-min_time_entry3.pack()
-
-max_time_label3 = tk.Label(root, text="Enter maximum time for flask 3 (seconds):")
-max_time_label3.pack()
-
-max_time_entry3 = tk.Entry(root)
-max_time_entry3.pack()
-
-min_time_label4 = tk.Label(root, text="Enter minimum time for flask 4 (seconds):")
-min_time_label4.pack()
-
-min_time_entry4 = tk.Entry(root)
-min_time_entry4.pack()
-
-max_time_label4 = tk.Label(root, text="Enter maximum time for flask 4 (seconds):")
-max_time_label4.pack()
-
-max_time_entry4 = tk.Entry(root)
-max_time_entry4.pack()
 
 # Button to start the timer
 start_button = tk.Button(root, text="Start Timer", command=start_timer)
