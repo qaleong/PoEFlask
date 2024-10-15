@@ -12,6 +12,9 @@ def flask_1(time1,time2,button):
     if time1 > time2:
         messagebox.showerror("Error", "Max time must be greater than min time.")
         return
+    elif time1 < 0 or time2 <0:
+        messagebox.showerror("Error", "Max time cannot be less than zero.")
+        return
     else:
         while running:
             timesec = random.uniform(time1,time2)
